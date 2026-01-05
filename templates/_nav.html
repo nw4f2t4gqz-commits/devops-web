@@ -1,0 +1,34 @@
+<nav class="fixed w-full z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="text-xl font-mono font-bold text-blue-400" title="Domů"
+            aria-label="Přejít na domovskou stránku">
+            <span class="text-slate-500">~/</span>tomas_jartymyk
+        </a>
+        <div class="space-x-8 hidden md:flex items-center">
+            <a id="nav-home" href="/"
+                class="hover:text-blue-400 transition {% if current_path == '/' %}font-bold text-blue-300{% endif %}" {%
+                if current_path=='/' %}aria-current="page" {% endif %}>{{ tr('home') }}</a>
+            <a id="nav-services" href="/#services" class="hover:text-blue-400 transition">{{ tr('services') }}</a>
+            <a href="/about"
+                class="hover:text-blue-400 transition {% if current_path.startswith('/about') %}font-bold text-blue-300{% endif %}"
+                {% if current_path.startswith('/about') %}aria-current="page" {% endif %}>{{ tr('about') }}</a>
+            <a href="/deploy"
+                class="hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}"
+                {% if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
+            <a href="/contact"
+                class="bg-blue-600 hover:bg-blue-500 px-5 py-2 rounded-lg font-bold transition text-white">Kontakt</a>
+            {% if admin_enabled %}
+            {% if is_admin %}
+            <a href="/admin/leads"
+                class="ml-4 hover:text-yellow-300 transition {% if current_path.startswith('/admin') %}font-bold text-yellow-300{% endif %}">
+                Admin
+            </a>
+            <a href="/admin/logout" class="ml-4 text-sm text-gray-300 hover:text-white">Logout</a>
+            {% else %}
+            <a href="/admin/login" class="ml-4 text-sm text-gray-300 hover:text-white">Admin login</a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>
+<script src="/static/js/nav.js" defer></script>

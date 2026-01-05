@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="cs">
+<!doctype html>
+<html lang="cs" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin - Leads</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .muted {
+            color: #94a3b8
+        }
+    </style>
+</head>
+
+<body class="bg-[#0f172a] text-slate-200 font-sans">
+    {% include '_nav.html' %}
+
+    <header class="pt-32 pb-8 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2">Správa leadů</h1>
+            <p class="text-slate-400">Zde uvidíte kontakty zaslané přes formulář. Můžete je znovu odeslat nebo smazat.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 pb-20">
+        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 shadow-lg">
+            <div class="flex items-center justify-between mb-4">
+                <div class="text-sm text-slate-400">Zobrazeno až 200 posledních záznamů</div>
+                <div class="flex items-center gap-2">
+                    <form action="" method="get">
+                        <input name="q" placeholder="Hledat podle jména nebo e-mailu"
+                            class="px-3 py-2 rounded bg-slate-800 border border-slate-700 text-sm text-slate-200" />
+                    </form>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-300 border-b border-slate-700">
+                            <th class="p-3">#</th>
+                            <th class="p-3">Jméno</th>
+                            <th class="p-3">Email</th>
+                            <th class="p-3">IP</th>
+                            <th class="p-3">Vytvořeno</th>
+                            <th class="p-3">Emailed</th>
+                            <th class="p-3">Chyba</th>
+                            <th class="p-3">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in leads %}
+                        <tr class="border-b border-slate-800 hover:bg-slate-800/20">
+                            <td class="p-3 align-top text-slate-300">{{ l.id }}</td>
+                            <td class="p-3 align-top">
+                                <div class="font-bold text-white">{{ l.name|e }}</div>
+                                <div class="text-xs muted">{{ l.email|e }}</div>
+                            </td>
+                            <td class="p-3 align-top text-slate-300">{{ l.email|e }}</td>
+                            <td class="p-3 align-top text-slate-300">{{ l.ip }}</td>
+                            <td class="p-3 align-top text-slate-300">{{ l.created_at }}</td>
+                            <td class="p-3 align-top">
+                                {% if l.emailed %}
+                                <span class="px-3 py-1 rounded-full bg-green-600 text-white text-sm">Ano</span>
+                                {% else %}
+                                <span class="px-3 py-1 rounded-full bg-slate-700 text-slate-300 text-sm">Ne</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3 align-top break-words" style="max-width:300px;white-space:pre-wrap;">{{
+                                l.error or '' }}</td>
+                            <td class="p-3 align-top">
+                                <div class="flex gap-2">
+                                    <form action="{{ url_for('admin_resend', lead_id=l.id) }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                        <button
+                                            class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded font-semibold text-sm">Resend</button>
+                                    </form>
+                                    <form action="{{ url_for('admin_delete', lead_id=l.id) }}" method="post"
+                                        onsubmit="return confirm('Smazat lead {{ l.id }}?')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                        <button
+                                            class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded font-semibold text-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-6 text-center text-slate-500 text-sm font-mono">
+            &copy; 2026 Tomáš Jartymyk. Admin area.
+        </div>
+    </footer>
+
+</body>
+
+</html>

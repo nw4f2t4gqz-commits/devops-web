@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="cs">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Kontakt — Tomáš Jartymyk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0f172a] text-slate-200 font-sans">
+    {% include '_nav.html' %}
+
+    <main class="pt-28 max-w-3xl mx-auto px-6 pb-20">
+        <div class="bg-slate-800/40 border border-slate-700 rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-3">Kontaktujte mě</h1>
+
+            {% if success %}
+            <div class="p-3 mb-4 bg-green-800 text-green-200 rounded">Děkuji, zpráva byla odeslána.</div>
+            {% elif error %}
+            <div class="p-3 mb-4 bg-red-800 text-red-200 rounded">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="/contact" novalidate>
+                <div class="mb-3">
+                    <label class="block text-sm text-slate-300">Jméno</label>
+                    <input name="name" required
+                        class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white" />
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm text-slate-300">Email</label>
+                    <input name="email" type="email" required
+                        class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white" />
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm text-slate-300">Zpráva</label>
+                    <textarea name="message" rows="6" required
+                        class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white"></textarea>
+                </div>
+
+                <!-- Honeypot: should remain empty -->
+                <div style="display:none!important;" aria-hidden="true">
+                    <label>Nevyplňovat</label>
+                    <input name="hp_phone" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="submit" class="bg-blue-600 px-4 py-2 rounded font-bold">Odeslat</button>
+                    <a href="/" class="text-slate-400">Zpět na domovskou stránku</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="py-8 text-center text-slate-500 text-xs">&copy; 2026 Tomáš Jartymyk</footer>
+</body>
+
+</html>
