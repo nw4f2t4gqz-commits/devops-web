@@ -26,3 +26,47 @@
     window.addEventListener('hashchange', markServices);
     document.addEventListener('DOMContentLoaded', markServices);
 })();
+
+// Mobile menu toggle logic
+(function () {
+    function toggleMobileMenu(open) {
+        try {
+            var menu = document.getElementById('mobile-menu');
+            var btn = document.getElementById('mobile-menu-button');
+            if (!menu || !btn) return;
+            if (open === undefined) open = menu.classList.contains('hidden');
+            if (open) {
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            var btn = document.getElementById('mobile-menu-button');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                toggleMobileMenu();
+            });
+            // close menu when navigating via links inside it (improves mobile UX)
+            var menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.addEventListener('click', function (e) {
+                    var target = e.target;
+                    if (target && target.tagName === 'A') {
+                        toggleMobileMenu(false);
+                    }
+                });
+            }
+        } catch (e) {
+            // ignore
+        }
+    });
+})();

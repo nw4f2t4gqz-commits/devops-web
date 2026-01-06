@@ -10,7 +10,7 @@ except Exception:
     
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from models import init_db, SessionLocal, Lead
+from models import init_db, SessionLocal, Lead, PageView
 try:
     from flask_wtf import CSRFProtect
     from flask_wtf.csrf import generate_csrf
@@ -224,6 +224,47 @@ def inject_translations():
     return dict(tr=tr, current_lang=lang, current_path=current_path, admin_enabled=admin_enabled, is_admin=is_admin)
 
 
+@app.before_request
+def track_page_view():
+    """Record a simple per-path page view for GET requests (excludes static/admin/health etc.)."""
+    s = None
+    try:
+        # Only count safe GETs
+        if request.method != 'GET':
+            return
+        p = request.path or '/' 
+        # Exclude common non-public or noisy paths
+        if p.startswith('/static') or p.startswith('/admin') or p.startswith('/health') or p.startswith('/favicon'):
+            return
+
+        s = SessionLocal()
+        pv = s.query(PageView).filter_by(path=p).first()
+        now = datetime.datetime.utcnow()
+        if not pv:
+            pv = PageView(path=p, count=1, first_seen=now, last_seen=now)
+            s.add(pv)
+        else:
+            pv.count = (pv.count or 0) + 1
+            pv.last_seen = now
+        s.commit()
+    except Exception:
+        try:
+            app.logger.exception('Failed to record page view')
+        except Exception:
+            pass
+        try:
+            if s:
+                s.rollback()
+        except Exception:
+            pass
+    finally:
+        try:
+            if s:
+                s.close()
+        except Exception:
+            pass
+
+
 @app.route('/about')
 def about():
     data = {
@@ -416,7 +457,7 @@ from functools import wraps
 from email.message import EmailMessage
 from flask import render_template, request, redirect, url_for, Response, abort
 
-from models import SessionLocal, Lead
+from models import SessionLocal, Lead, PageView
 
 def _check_admin(auth_header: str) -> bool:
     if not auth_header:
@@ -506,7 +547,11 @@ def admin_logout():
 def admin_leads():
     s = SessionLocal()
     leads = s.query(Lead).order_by(Lead.id.desc()).limit(200).all()
-    return render_template('admin_leads.html', leads=leads)
+    try:
+        page_stats = s.query(PageView).order_by(PageView.count.desc()).limit(50).all()
+    except Exception:
+        page_stats = []
+    return render_template('admin_leads.html', leads=leads, page_stats=page_stats)
 
 @app.route('/admin/leads/resend/<int:lead_id>', methods=['POST'])
 @admin_required

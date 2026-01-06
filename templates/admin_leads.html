@@ -28,6 +28,25 @@
     </header>
 
     <main class="max-w-6xl mx-auto px-6 pb-20">
+        <!-- Page view stats (top pages) -->
+        {% if page_stats %}
+        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 shadow-lg mb-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="font-bold text-white">Top nav / page views</div>
+                <div class="text-sm text-slate-400">Poslední záznamy</div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {% for p in page_stats %}
+                <div class="p-3 bg-slate-800/30 rounded">
+                    <div class="text-sm text-slate-300 break-words">{{ p.path }}</div>
+                    <div class="text-2xl font-bold text-white">{{ p.count }}</div>
+                    <div class="text-xs text-slate-400">Poslední: {{ p.last_seen }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 shadow-lg">
             <div class="flex items-center justify-between mb-4">
                 <div class="text-sm text-slate-400">Zobrazeno až 200 posledních záznamů</div>

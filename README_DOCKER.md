@@ -1,10 +1,17 @@
 Docker quick start
 
-Build image locally:
+Build image locally for MacOS:
 
 ```bash
 cd /path/to/project
 docker build -t devops-web:latest .
+
+```
+
+Build image for AMD64 and push to docker.hub
+
+```bash
+docker buildx build --platform linux/amd64 -t jartas/devops-web:linux-amd64 --push .
 ```
 
 Run container:

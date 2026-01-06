@@ -28,5 +28,14 @@ class Lead(Base):
     error = Column(Text, nullable=True)
 
 
+class PageView(Base):
+    __tablename__ = 'page_views'
+    id = Column(Integer, primary_key=True, index=True)
+    path = Column(String(500), unique=True, index=True)
+    count = Column(Integer, default=0)
+    first_seen = Column(DateTime, default=datetime.datetime.utcnow)
+    last_seen = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)
