@@ -410,3 +410,23 @@ smtplib.SMTPAuthenticationError: (535, b'5.7.3 Authentication unsuccessful [VI1P
 2026-01-06 18:46:46,228 INFO app: Logging initialized. Log file: /app/log/app.log
 2026-01-06 18:55:57,729 INFO app: Logging initialized. Log file: /app/log/app.log
 2026-01-06 18:55:57,775 INFO app: Logging initialized. Log file: /app/log/app.log
+2026-01-06 19:41:42,705 INFO app: Logging initialized. Log file: /app/log/app.log
+2026-01-06 19:41:42,716 INFO app: Logging initialized. Log file: /app/log/app.log
+2026-01-06 20:47:05,360 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 20:47:08,066 INFO app: Language selection: lang=cs
+2026-01-06 20:47:10,566 INFO app: Language selection: lang=cs
+2026-01-06 21:02:39,083 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:03:15,134 INFO app: Language manually set to en
+2026-01-06 21:03:20,871 INFO app: Language manually set to cs
+2026-01-06 21:05:02,368 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:07:25,622 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:07:44,907 INFO app: Admin logged out from 127.0.0.1
+2026-01-06 21:16:13,126 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:16:25,168 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:26:07,971 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:26:47,409 INFO app: Admin logged in from 127.0.0.1
+2026-01-06 21:28:47,264 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:29:59,164 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:33:04,976 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:34:01,204 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log
+2026-01-06 21:36:03,008 INFO app: Logging initialized. Log file: /Users/tomasjartymyk/Library/Mobile Documents/com~apple~CloudDocs/DevOps/devops-web/log/app.log

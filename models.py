@@ -37,5 +37,14 @@ class PageView(Base):
     last_seen = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
 
+class AccessLocation(Base):
+    __tablename__ = 'access_locations'
+    id = Column(Integer, primary_key=True, index=True)
+    country = Column(String(8), unique=True, index=True)
+    count = Column(Integer, default=0)
+    first_seen = Column(DateTime, default=datetime.datetime.utcnow)
+    last_seen = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)

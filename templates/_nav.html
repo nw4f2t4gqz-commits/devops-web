@@ -16,16 +16,18 @@
                 class="hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}"
                 {% if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
             <a href="/contact"
-                class="bg-blue-600 hover:bg-blue-500 px-5 py-2 rounded-lg font-bold transition text-white">Kontakt</a>
+                class="bg-blue-600 hover:bg-blue-500 px-5 py-2 rounded-lg font-bold transition text-white">{{
+                tr('contact') }}</a>
+            <!-- language switcher removed -->
             {% if admin_enabled %}
             {% if is_admin %}
             <a href="/admin/leads"
                 class="ml-4 hover:text-yellow-300 transition {% if current_path.startswith('/admin') %}font-bold text-yellow-300{% endif %}">
-                Admin
+                {{ tr('admin') }}
             </a>
-            <a href="/admin/logout" class="ml-4 text-sm text-gray-300 hover:text-white">Logout</a>
+            <a href="/admin/logout" class="ml-4 text-sm text-gray-300 hover:text-white">{{ tr('logout') }}</a>
             {% else %}
-            <a href="/admin/login" class="ml-4 text-sm text-gray-300 hover:text-white">Admin login</a>
+            <a href="/admin/login" class="ml-4 text-sm text-gray-300 hover:text-white">{{ tr('admin_login') }}</a>
             {% endif %}
             {% endif %}
         </div>
@@ -56,13 +58,15 @@
             class="block hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}">{%
             if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
         <a href="/contact"
-            class="block bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold transition text-white">Kontakt</a>
+            class="block bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold transition text-white">{{
+            tr('contact') }}</a>
+        <!-- language switcher removed -->
         {% if admin_enabled %}
         {% if is_admin %}
-        <a href="/admin/leads" class="block hover:text-yellow-300 transition">Admin</a>
-        <a href="/admin/logout" class="block hover:text-white transition">Logout</a>
+        <a href="/admin/leads" class="block hover:text-yellow-300 transition">{{ tr('admin') }}</a>
+        <a href="/admin/logout" class="block hover:text-white transition">{{ tr('logout') }}</a>
         {% else %}
-        <a href="/admin/login" class="block hover:text-white transition">Admin login</a>
+        <a href="/admin/login" class="block hover:text-white transition">{{ tr('admin_login') }}</a>
         {% endif %}
         {% endif %}
     </div>

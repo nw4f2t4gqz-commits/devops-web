@@ -22,7 +22,7 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
 try:
-    from models import SessionLocal, Lead
+    from models import SessionLocal, Lead, AccessLocation
 except Exception as e:
     print("Failed to import models. Run this script from the project root and ensure dependencies are installed.")
     raise
@@ -37,11 +37,8 @@ if not os.path.exists(DB_FILE):
     print(f"DB file not found: {DB_FILE}")
     sys.exit(1)
 
-# Backup
-stamp = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-backup = DB_FILE + f'.{stamp}.bak'
-print(f'Creating backup: {backup}')
-shutil.copy2(DB_FILE, backup)
+# Backup creation disabled per request — script will NOT create a backup copy of the DB.
+# If you need backups in the future, re-enable the code below or run an external backup.
 
 if not args.yes:
     confirm = input('This will DELETE ALL rows from the leads table. Type YES to proceed: ')
@@ -52,14 +49,15 @@ if not args.yes:
 # Perform deletion using SQLAlchemy
 session = SessionLocal()
 try:
-    deleted = session.query(Lead).delete()
+    deleted_leads = session.query(Lead).delete()
+    deleted_locs = session.query(AccessLocation).delete()
     session.commit()
-    print(f'Deleted {deleted} rows from leads table.')
+    print(f'Deleted {deleted_leads} rows from leads table.')
+    print(f'Deleted {deleted_locs} rows from access locations table.')
 except Exception as e:
     session.rollback()
     print('Failed to clear leads:', e)
 finally:
     session.close()
 
-print('Done. Backup is kept at:')
-print('  ', backup)
+print('Done. No backup was created (backups disabled).')

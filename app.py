@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, session
 import datetime
 import os
 import platform
+from pathlib import Path
 try:
     import requests as _requests
 except Exception:
@@ -10,7 +11,7 @@ except Exception:
     
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from models import init_db, SessionLocal, Lead, PageView
+from models import init_db, SessionLocal, Lead, PageView, AccessLocation
 try:
     from flask_wtf import CSRFProtect
     from flask_wtf.csrf import generate_csrf
@@ -27,6 +28,34 @@ except Exception:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
+
+# Load local .env file into process environment for convenience in development.
+# This does NOT override existing environment variables; it only sets missing keys.
+def _load_dotenv_if_present():
+    try:
+        base = os.path.dirname(__file__)
+        env_path = Path(base) / '.env'
+        if not env_path.exists():
+            return
+        with env_path.open('r', encoding='utf-8') as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' not in line:
+                    continue
+                k, v = line.split('=', 1)
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                # do not override existing environment variables
+                if k and os.environ.get(k) is None:
+                    os.environ[k] = v
+    except Exception:
+        # best-effort only; don't crash the app on parse errors
+        pass
+
+# load .env early so subsequent os.environ.get(...) finds values
+_load_dotenv_if_present()
 # Rate limiter: use Redis if REDIS_URL is provided, otherwise fall back to in-memory
 redis_url = os.environ.get('REDIS_URL') or os.environ.get('REDIS_URI')
 if redis_url:
@@ -108,34 +137,41 @@ def get_country_for_ip(ip: str) -> str:
 
 def select_language():
     """Decide language for current request: 'cs' or 'en'.
-    Priority: if detected country == 'CZ' use 'cs', else 'en'.
-    If geo lookup fails, fallback to Accept-Language header (cs if startswith 'cs').
-    Logs the client IP, detected country and selected language.
+    Priority:
+    1) session override (manual switch)
+    2) Accept-Language header (cs -> 'cs')
+    3) default 'en'
+    Note: we no longer use geo IP lookup for language selection to improve privacy.
     """
-    ip = get_client_ip()
-    country = get_country_for_ip(ip)
+    # 0) query param override for testing (e.g. /?lang=en)
+    try:
+        qlang = request.args.get('lang') or request.args.get('_lang')
+    except Exception:
+        qlang = None
+    if qlang in ('cs', 'en'):
+        # persist in session so subsequent pages keep the selected language during testing
+        try:
+            session['lang'] = qlang
+        except Exception:
+            pass
+        return qlang
+
+    # 1) session override
+    try:
+        lang_override = session.get('lang')
+    except Exception:
+        lang_override = None
+    if lang_override in ('cs', 'en'):
+        return lang_override
+
+    # 2) Accept-Language
+    al = request.headers.get('Accept-Language', '')
+    # If the user's system/browser language contains Czech anywhere, prefer cs
+    if 'cs' in al.lower():
+        return 'cs'
 
     # default
-    lang = 'en'
-    if country == 'CZ':
-        lang = 'cs'
-    elif country:
-        lang = 'en'
-    else:
-        # Fallback to Accept-Language
-        al = request.headers.get('Accept-Language', '')
-        if al.lower().startswith('cs'):
-            lang = 'cs'
-        else:
-            lang = 'en'
-
-    # Log detection result
-    try:
-        app.logger.info(f"Language selection: ip={ip} country={country!r} lang={lang}")
-    except Exception:
-        pass
-
-    return lang
+    return 'en'
 
 
 translations = {
@@ -163,6 +199,60 @@ translations = {
         'username': 'Uživatelské jméno',
         'password': 'Heslo',
         'login': 'Přihlásit'
+        ,
+        # Additional translation keys added for improved i18n coverage
+        'admin': 'Admin',
+        'logout': 'Odhlásit',
+        'admin_login': 'Přihlášení admin',
+        'svc_kubernetes_title': 'Kubernetes & Orchestrace',
+        'svc_kubernetes_desc': 'Jako CKA navrhuji a spravuji produkční clustery. Specializuji se na High Availability a Zero-downtime deploymenty.',
+        'svc_iac_title': 'Infrastructure as Code',
+        'svc_iac_desc': 'Automatizuji cloudovou infrastrukturu pomocí Terraformu. Vaše prostředí bude plně verzované a replikovatelné.',
+        'svc_cicd_title': 'CI/CD Pipelines',
+        'svc_cicd_desc': 'Stavím pipelines v GitHub Actions nebo GitLab CI, které zrychlují cestu vašeho kódu do produkce.',
+        'svc_obs_title': 'Observability',
+        'svc_obs_desc': 'Nasazuji monitoring založený na Prometheus a Grafana. Mějte přehled o každém requestu.',
+        'admin_leads_title': 'Správa leadů',
+        'admin_leads_desc': 'Zde uvidíte kontakty zaslané přes formulář. Můžete je znovu odeslat nebo smazat.',
+        'top_pages_title': 'Top nav / page views',
+        'top_pages_sub': 'Poslední záznamy',
+        'location_title': 'Lokality přístupů',
+        'location_sub': 'Počet návštěv podle zemí',
+        'shown_records_info': 'Zobrazeno až 200 posledních záznamů',
+        'search_placeholder': 'Hledat podle jména nebo e-mailu',
+        'lead_id': '#',
+        'lead_name': 'Jméno',
+        'lead_email': 'Email',
+        'lead_ip': 'IP',
+        'lead_created': 'Vytvořeno',
+        'lead_emailed': 'Odesláno',
+        'lead_error': 'Chyba',
+        'lead_actions': 'Akce',
+        'yes': 'Ano',
+        'no': 'Ne',
+        'resend': 'Znovu odeslat',
+        'delete': 'Smazat',
+        'confirm_delete': 'Smazat lead %s?',
+        'contact_title': 'Kontaktujte mě',
+        'contact_success': 'Děkuji, zpráva byla odeslána.',
+        'name': 'Jméno',
+        'email': 'Email',
+        'message': 'Zpráva',
+        'send': 'Odeslat',
+        'back_home': 'Zpět na domovskou stránku',
+        'company_details': 'Firemní údaje / Company details',
+        'deploy_demo_title': 'Ukázka procesu nasazení',
+        'deploy_demo_desc': 'Interaktivní přehled kroků, které vedou od zdrojového kódu k běžícímu kontejneru. Stránka je pouze ukázka.',
+        'simulator_title': 'Simulátor nasazení',
+        'play': 'Play',
+        'pause': 'Pause',
+        'speed': 'Speed',
+        'pipeline_steps_title': 'Kroky pipeline',
+        'practical_commands': 'Praktické příkazy (ukázka)',
+        'recent_logs': 'Poslední logy aplikace',
+        'artifact_files': 'Soubory použití k sestavení',
+        'show_content': 'Zobrazit obsah',
+        'security': 'Bezpečnost'
     },
     'en': {
         'home': 'Home',
@@ -188,6 +278,60 @@ translations = {
         'contact_me': 'Contact me',
         'system_healthy': 'System Healthy'
         , 'deploy': 'Deployment'
+        ,
+        # Additional English keys for localized UI
+        'admin': 'Admin',
+        'logout': 'Logout',
+        'admin_login': 'Admin login',
+        'svc_kubernetes_title': 'Kubernetes & Orchestration',
+        'svc_kubernetes_desc': 'As a CKA I design and operate production clusters. I specialise in High Availability and zero-downtime deployments.',
+        'svc_iac_title': 'Infrastructure as Code',
+        'svc_iac_desc': 'I automate cloud infrastructure with Terraform. Your environment will be fully versioned and reproducible.',
+        'svc_cicd_title': 'CI/CD Pipelines',
+        'svc_cicd_desc': 'I build pipelines using GitHub Actions or GitLab CI that speed the path from code to production.',
+        'svc_obs_title': 'Observability',
+        'svc_obs_desc': 'I deploy monitoring based on Prometheus and Grafana so you can observe every request.',
+        'admin_leads_title': 'Manage leads',
+        'admin_leads_desc': 'Here you will see contact submissions. You can resend or delete entries.',
+        'top_pages_title': 'Top nav / page views',
+        'top_pages_sub': 'Recent records',
+        'location_title': 'Access locations',
+        'location_sub': 'Visit counts per country',
+        'shown_records_info': 'Showing up to 200 recent records',
+        'search_placeholder': 'Search by name or email',
+        'lead_id': '#',
+        'lead_name': 'Name',
+        'lead_email': 'Email',
+        'lead_ip': 'IP',
+        'lead_created': 'Created',
+        'lead_emailed': 'Emailed',
+        'lead_error': 'Error',
+        'lead_actions': 'Actions',
+        'yes': 'Yes',
+        'no': 'No',
+        'resend': 'Resend',
+        'delete': 'Delete',
+        'confirm_delete': 'Delete lead %s?',
+        'contact_title': 'Contact me',
+        'contact_success': 'Thanks — your message was sent.',
+        'name': 'Name',
+        'email': 'Email',
+        'message': 'Message',
+        'send': 'Send',
+        'back_home': 'Back to home',
+        'company_details': 'Company details',
+        'deploy_demo_title': 'Deployment demo',
+        'deploy_demo_desc': 'An interactive overview of steps that take source code to a running container. This page is a demo only.',
+        'simulator_title': 'Deployment simulator',
+        'play': 'Play',
+        'pause': 'Pause',
+        'speed': 'Speed',
+        'pipeline_steps_title': 'Pipeline steps',
+        'practical_commands': 'Practical commands (example)',
+        'recent_logs': 'Recent application logs',
+        'artifact_files': 'Build artifact files',
+        'show_content': 'Show content',
+        'security': 'Security'
     }
 }
 
@@ -226,26 +370,52 @@ def inject_translations():
 
 @app.before_request
 def track_page_view():
-    """Record a simple per-path page view for GET requests (excludes static/admin/health etc.)."""
+    """Record page view only for the main page ('/') and update access location counts."""
     s = None
     try:
         # Only count safe GETs
         if request.method != 'GET':
             return
-        p = request.path or '/' 
-        # Exclude common non-public or noisy paths
-        if p.startswith('/static') or p.startswith('/admin') or p.startswith('/health') or p.startswith('/favicon'):
+        p = request.path or '/'
+        # Only record the main page to avoid counting assets and other pages
+        if p != '/':
             return
 
         s = SessionLocal()
-        pv = s.query(PageView).filter_by(path=p).first()
         now = datetime.datetime.utcnow()
+
+        # Update page view for root path
+        pv = s.query(PageView).filter_by(path='/').first()
         if not pv:
-            pv = PageView(path=p, count=1, first_seen=now, last_seen=now)
+            pv = PageView(path='/', count=1, first_seen=now, last_seen=now)
             s.add(pv)
         else:
             pv.count = (pv.count or 0) + 1
             pv.last_seen = now
+
+        # Update access location (country) stats
+        try:
+            ip = get_client_ip()
+            country = get_country_for_ip(ip)
+            # Fallback: if geo lookup failed, infer from Accept-Language (cs -> CZ), else mark as OTHER
+            if not country:
+                al_header = request.headers.get('Accept-Language', '')
+                if al_header.lower().startswith('cs'):
+                    country = 'CZ'
+                else:
+                    country = 'OTHER'
+
+            al = s.query(AccessLocation).filter_by(country=country).first()
+            if not al:
+                al = AccessLocation(country=country, count=1, first_seen=now, last_seen=now)
+                s.add(al)
+            else:
+                al.count = (al.count or 0) + 1
+                al.last_seen = now
+        except Exception:
+            # don't let geo lookup failures stop counting page views
+            pass
+
         s.commit()
     except Exception:
         try:
@@ -457,7 +627,7 @@ from functools import wraps
 from email.message import EmailMessage
 from flask import render_template, request, redirect, url_for, Response, abort
 
-from models import SessionLocal, Lead, PageView
+from models import SessionLocal, Lead, PageView, AccessLocation
 
 def _check_admin(auth_header: str) -> bool:
     if not auth_header:
@@ -542,6 +712,9 @@ def admin_logout():
     app.logger.info(f'Admin logged out from {get_client_ip()}')
     return redirect(url_for('home'))
 
+
+# manual language switching removed — language selection now follows system/browser Accept-Language
+
 @app.route('/admin/leads')
 @admin_required
 def admin_leads():
@@ -551,7 +724,11 @@ def admin_leads():
         page_stats = s.query(PageView).order_by(PageView.count.desc()).limit(50).all()
     except Exception:
         page_stats = []
-    return render_template('admin_leads.html', leads=leads, page_stats=page_stats)
+    try:
+        location_stats = s.query(AccessLocation).order_by(AccessLocation.count.desc()).limit(50).all()
+    except Exception:
+        location_stats = []
+    return render_template('admin_leads.html', leads=leads, page_stats=page_stats, location_stats=location_stats)
 
 @app.route('/admin/leads/resend/<int:lead_id>', methods=['POST'])
 @admin_required

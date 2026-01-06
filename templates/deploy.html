@@ -15,22 +15,22 @@
 
     <main class="pt-28 max-w-6xl mx-auto px-6 pb-20">
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-extrabold">Ukázka procesu nasazení</h1>
-            <p class="text-slate-400 mt-3 max-w-2xl mx-auto">Interaktivní přehled kroků, které vedou od zdrojového kódu
-                k běžícímu kontejneru. Stránka je pouze ukázka — žádné příkazy zde nejsou spouštěny na serveru.</p>
+            <h1 class="text-4xl md:text-5xl font-extrabold">{{ tr('deploy_demo_title') }}</h1>
+            <p class="text-slate-400 mt-3 max-w-2xl mx-auto">{{ tr('deploy_demo_desc') }}</p>
         </div>
 
         <!-- Animated deployment simulator (uses anime.js) -->
         <div class="max-w-4xl mx-auto mb-8">
             <div class="p-6 bg-slate-800/40 border border-slate-700 rounded-lg">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-2xl">Simulátor nasazení</h2>
+                    <h2 class="font-bold text-2xl">{{ tr('simulator_title') }}</h2>
                     <div class="flex items-center gap-2">
                         <button id="deploy-play"
-                            class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm font-bold">Play</button>
-                        <button id="deploy-pause"
-                            class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">Pause</button>
-                        <label class="text-xs text-slate-400 ml-3">Speed</label>
+                            class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm font-bold">{{ tr('play')
+                            }}</button>
+                        <button id="deploy-pause" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">{{
+                            tr('pause') }}</button>
+                        <label class="text-xs text-slate-400 ml-3">{{ tr('speed') }}</label>
                         <select id="deploy-speed" class="ml-2 bg-[#021024] text-sm p-1 rounded">
                             <option value="0.5">0.5x</option>
                             <option value="1" selected>1x</option>
@@ -57,7 +57,7 @@
         <section class="grid md:grid-cols-3 gap-6">
             <div class="md:col-span-2 space-y-6">
                 <div class="p-6 bg-slate-800/40 border border-slate-700 rounded-lg">
-                    <h2 class="font-bold text-2xl mb-2">Kroky pipeline</h2>
+                    <h2 class="font-bold text-2xl mb-2">{{ tr('pipeline_steps_title') }}</h2>
                     <ol class="list-decimal list-inside text-slate-300 leading-relaxed">
                         <li>Checkout: získání zdrojového kódu z Git repozitáře</li>
                         <li>Install dependencies: pip install -r requirements.txt</li>
@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="p-6 bg-slate-800/40 border border-slate-700 rounded-lg">
-                    <h3 class="font-bold text-xl mb-2">Praktické příkazy (ukázka)</h3>
+                    <h3 class="font-bold text-xl mb-2">{{ tr('practical_commands') }}</h3>
                     <pre class="text-sm bg-[#021024] p-4 rounded text-green-200 overflow-auto"># Instalace závislostí
 pip install -r requirements.txt
 
@@ -91,14 +91,14 @@ tail -n 200 log/app.log</pre>
                 </div>
 
                 <div class="p-6 bg-slate-800/40 border border-slate-700 rounded-lg">
-                    <h3 class="font-bold text-xl mb-2">Poslední logy aplikace</h3>
+                    <h3 class="font-bold text-xl mb-2">{{ tr('recent_logs') }}</h3>
                     <pre class="text-sm bg-[#020916] p-4 rounded max-h-80 overflow-auto text-slate-200">{{ logs }}</pre>
                 </div>
             </div>
 
             <aside class="space-y-6">
                 <div class="p-4 bg-slate-800/30 border border-slate-700 rounded-lg">
-                    <h4 class="font-bold">Soubory použití k sestavení</h4>
+                    <h4 class="font-bold">{{ tr('artifact_files') }}</h4>
                     <ul class="mt-3 text-slate-300">
                         {% for name, meta in artifacts.items() %}
                         <li class="mb-2">
@@ -106,7 +106,7 @@ tail -n 200 log/app.log</pre>
                             <div class="text-xs text-slate-400">{{ meta.mtime if meta.mtime else '—' }} — {{ 'exists' if
                                 meta.exists else 'missing' }}</div>
                             <details class="mt-2 text-xs">
-                                <summary class="cursor-pointer text-blue-300">Zobrazit obsah</summary>
+                                <summary class="cursor-pointer text-blue-300">{{ tr('show_content') }}</summary>
                                 <pre
                                     class="mt-2 p-2 bg-[#021024] rounded text-xs overflow-auto">{{ meta.content }}</pre>
                             </details>
@@ -116,7 +116,7 @@ tail -n 200 log/app.log</pre>
                 </div>
 
                 <div class="p-4 bg-slate-800/30 border border-slate-700 rounded-lg">
-                    <h4 class="font-bold">Bezpečnost</h4>
+                    <h4 class="font-bold">{{ tr('security') }}</h4>
                     <p class="text-slate-400 text-sm">Tato stránka pouze čte lokální soubory a logy. Nikdy na serveru
                         nespouští shell příkazy ani nezveřejňuje citlivé tajné hodnoty.</p>
                 </div>
@@ -124,7 +124,7 @@ tail -n 200 log/app.log</pre>
         </section>
 
         <div class="mt-10 text-center text-slate-400">
-            <a href="/" class="text-blue-400">Zpět na domovskou stránku</a>
+            <a href="/" class="text-blue-400">{{ tr('back_home') }}</a>
         </div>
     </main>
 

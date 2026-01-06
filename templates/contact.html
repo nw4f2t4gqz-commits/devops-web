@@ -13,27 +13,27 @@
 
     <main class="pt-28 max-w-3xl mx-auto px-6 pb-20">
         <div class="bg-slate-800/40 border border-slate-700 rounded-lg p-6">
-            <h1 class="text-2xl font-bold mb-3">Kontaktujte mě</h1>
+            <h1 class="text-2xl font-bold mb-3">{{ tr('contact_title') }}</h1>
 
             {% if success %}
-            <div class="p-3 mb-4 bg-green-800 text-green-200 rounded">Děkuji, zpráva byla odeslána.</div>
+            <div class="p-3 mb-4 bg-green-800 text-green-200 rounded">{{ tr('contact_success') }}</div>
             {% elif error %}
             <div class="p-3 mb-4 bg-red-800 text-red-200 rounded">{{ error }}</div>
             {% endif %}
 
             <form method="post" action="/contact" novalidate>
                 <div class="mb-3">
-                    <label class="block text-sm text-slate-300">Jméno</label>
+                    <label class="block text-sm text-slate-300">{{ tr('name') }}</label>
                     <input name="name" required
                         class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white" />
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm text-slate-300">Email</label>
+                    <label class="block text-sm text-slate-300">{{ tr('email') }}</label>
                     <input name="email" type="email" required
                         class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white" />
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm text-slate-300">Zpráva</label>
+                    <label class="block text-sm text-slate-300">{{ tr('message') }}</label>
                     <textarea name="message" rows="6" required
                         class="mt-1 w-full p-2 rounded bg-[#021024] border border-slate-700 text-white"></textarea>
                 </div>
@@ -45,8 +45,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <button type="submit" class="bg-blue-600 px-4 py-2 rounded font-bold">Odeslat</button>
-                    <a href="/" class="text-slate-400">Zpět na domovskou stránku</a>
+                    <button type="submit" class="bg-blue-600 px-4 py-2 rounded font-bold">{{ tr('send') }}</button>
+                    <a href="/" class="text-slate-400">{{ tr('back_home') }}</a>
                 </div>
             </form>
         </div>

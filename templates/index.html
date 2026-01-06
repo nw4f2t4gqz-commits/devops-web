@@ -104,9 +104,8 @@
                         class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
                         <i class="fa-solid fa-server text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-white">Kubernetes & Orchestrace</h3>
-                    <p class="text-slate-400 leading-relaxed">Jako <strong>CKA</strong> navrhuji a spravuji produkční
-                        clustery. Specializuji se na High Availability a Zero-downtime deploymenty.</p>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ tr('svc_kubernetes_title') }}</h3>
+                    <p class="text-slate-400 leading-relaxed">{{ tr('svc_kubernetes_desc') }}</p>
                 </div>
 
                 <div
@@ -115,10 +114,8 @@
                         class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
                         <i class="fa-solid fa-code text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-white">Infrastructure as Code</h3>
-                    <p class="text-slate-400 leading-relaxed">Automatizuji cloudovou infrastrukturu pomocí
-                        <strong>Terraformu</strong>. Vaše prostředí bude plně verzované a replikovatelné.
-                    </p>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ tr('svc_iac_title') }}</h3>
+                    <p class="text-slate-400 leading-relaxed">{{ tr('svc_iac_desc') }}</p>
                 </div>
 
                 <div
@@ -127,9 +124,8 @@
                         class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
                         <i class="fa-solid fa-rocket text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-white">CI/CD Pipelines</h3>
-                    <p class="text-slate-400 leading-relaxed">Stavím pipelines v <strong>GitHub Actions</strong> nebo
-                        GitLab CI, které zrychlují cestu vašeho kódu do produkce.</p>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ tr('svc_cicd_title') }}</h3>
+                    <p class="text-slate-400 leading-relaxed">{{ tr('svc_cicd_desc') }}</p>
                 </div>
 
                 <div
@@ -138,9 +134,8 @@
                         class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
                         <i class="fa-solid fa-chart-line text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-white">Observability</h3>
-                    <p class="text-slate-400 leading-relaxed">Nasazuji monitoring založený na <strong>Prometheus a
-                            Grafana</strong>. Mějte přehled o každém requestu.</p>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ tr('svc_obs_title') }}</h3>
+                    <p class="text-slate-400 leading-relaxed">{{ tr('svc_obs_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -152,7 +147,7 @@
                 class="flex flex-col md:flex-row justify-center items-center gap-4 text-sm font-mono text-slate-500 mb-6">
                 <span class="flex items-center gap-2 text-green-400">
                     <span class="w-2 h-2 bg-green-500 rounded-full status-dot"></span>
-                    System Healthy
+                    {{ tr('system_healthy') }}
                 </span>
                 <span class="hidden md:inline">|</span>
                 <span>OS: {{ info.os }}</span>
