@@ -50,3 +50,4 @@ Notes:
 			 - SMTP_PASS=${SMTP_PASS}
 			 - EMAIL_TO=you@example.com
  ```
+docker
