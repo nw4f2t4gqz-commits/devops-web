@@ -1,4 +1,4 @@
-# Production docker-compose - používá image z GHCR místo lokálního buildu
+# Production docker-compose - use image from GHCR místo lokálního buildu
 services:
   nginx-proxy:
     image: jc21/nginx-proxy-manager:latest
