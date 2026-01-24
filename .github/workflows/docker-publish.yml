@@ -112,6 +112,27 @@ jobs:
             # Spusť nový container (clean start bez force-recreate)
             $COMPOSE_CMD up -d
             
+            # Počkej, než se nginx-proxy nastartuje
+            echo "⏳ Čekám na start nginx-proxy..."
+            sleep 10
+            
+            # Automaticky nakonfiguruj Nginx Proxy Manager (pokud ještě není)
+            echo "🔧 Konfigurace Nginx Proxy Manager..."
+            
+            # Nainstaluj jq (pokud není)
+            command -v jq &> /dev/null || apt-get update && apt-get install -y jq
+            
+            curl -o configure_nginx.sh https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/configure_nginx_proxy.sh
+            chmod +x configure_nginx.sh
+            
+            # Uprav email v skriptu (pokud máš NGINX_EMAIL secret)
+            if [ -n "${{ secrets.NGINX_EMAIL }}" ]; then
+              sed -i "s/your-email@example.com/${{ secrets.NGINX_EMAIL }}/g" configure_nginx.sh
+            fi
+            
+            # Spusť konfiguraci (ignoruj chyby, pokud už je nakonfigurováno)
+            ./configure_nginx.sh || echo "⚠️  Nginx config už existuje nebo selhala automatická konfigurace"
+            
             # Vyčisti staré images
             docker image prune -af
             
