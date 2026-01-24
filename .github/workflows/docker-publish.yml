@@ -46,8 +46,47 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Deploy pouze z main branch
+
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Přihlas se do GHCR
+            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Stáhni nejnovější image
+            docker pull ghcr.io/${{ github.repository }}:latest
+            
+            # Zastav a odstraň starý container
+            docker stop devops-web || true
+            docker rm devops-web || true
+            
+            # Spusť nový container
+            docker run -d \
+              --name devops-web \
+              -p 5000:5000 \
+              --restart unless-stopped \
+              -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+              ghcr.io/${{ github.repository }}:latest
+            
+            # Vyčisti staré images
+            docker image prune -af
+
 # Notes:
 # - This workflow builds and pushes to GitHub Container Registry (GHCR).
-# - To push to Docker Hub instead, replace the login step with Docker Hub credentials
-#   and set IMAGE to docker.io/<your-dockerhub-username>/<repo> (and add DOCKERHUB_USERNAME/DOCKERHUB_TOKEN
-#   secrets to your repo).
+# - Deployment job requires these secrets in GitHub repository settings:
+#   * VPS_HOST - IP adresa nebo hostname VPS serveru (např. 123.45.67.89)
+#   * VPS_USERNAME - SSH uživatelské jméno (např. root, ubuntu)
+#   * VPS_SSH_KEY - SSH private key pro přístup k VPS
+#   * VPS_PORT - SSH port (volitelné, default 22)
+#   * GHCR_PAT - GitHub Personal Access Token pro pull images
+#   * SECRET_KEY - Flask secret key pro aplikaci
