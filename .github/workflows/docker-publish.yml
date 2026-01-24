@@ -63,23 +63,35 @@ jobs:
             # Přihlas se do GHCR
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # Stáhni nejnovější image
-            docker pull ghcr.io/${{ github.repository }}:latest
+            # Najdi cestu k projektu
+            PROJECT_DIR=""
+            for dir in ~/devops-web /opt/devops-web /root/devops-web; do
+              if [ -d "$dir" ]; then
+                PROJECT_DIR="$dir"
+                break
+              fi
+            done
             
-            # Zastav a odstraň starý container
-            docker stop devops-web || true
-            docker rm devops-web || true
+            if [ -z "$PROJECT_DIR" ]; then
+              echo "Error: Project directory not found!"
+              exit 1
+            fi
             
-            # Spusť nový container
-            docker run -d \
-              --name devops-web \
-              -p 5000:5000 \
-              --restart unless-stopped \
-              -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
-              ghcr.io/${{ github.repository }}:latest
+            cd "$PROJECT_DIR"
+            echo "Working in: $PROJECT_DIR"
+            
+            # Stáhni nejnovější docker-compose.prod.yml z GitHubu
+            curl -o docker-compose.prod.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
+            
+            # Stáhni a restartuj s docker-compose
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d --force-recreate
             
             # Vyčisti staré images
             docker image prune -af
+            
+            echo "✅ Deployment completed!"
+            docker ps | grep devops-web
 
 # Notes:
 # - This workflow builds and pushes to GitHub Container Registry (GHCR).

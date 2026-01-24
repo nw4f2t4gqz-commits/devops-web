@@ -1,0 +1,26 @@
+# Production docker-compose - používá image z GHCR místo lokálního buildu
+services:
+  web:
+    image: ghcr.io/nw4f2t4gqz-commits/devops-web:latest
+    ports:
+      - "8000:5001" # host:container (app listens on 5001 inside image)
+    env_file:
+      - .env
+    environment:
+      - PORT=5001
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASS=${ADMIN_PASS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_TO=${EMAIL_TO}
+    volumes:
+      - ./data:/app/data
+      - ./log:/app/log
+    restart: unless-stopped
+
+volumes:
+  data:
+  log:
