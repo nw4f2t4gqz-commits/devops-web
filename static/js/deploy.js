@@ -1,7 +1,7 @@
 // GitHub Actions Live Status
-(function() {
+(function () {
     let refreshInterval;
-    
+
     function getStatusIcon(status, conclusion) {
         if (status === 'in_progress' || status === 'queued') {
             return `<svg class="animate-spin h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
         const date = new Date(dateString);
         const now = new Date();
         const diff = Math.floor((now - date) / 1000);
-        
+
         if (diff < 60) return `${diff}s ago`;
         if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
         if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
@@ -48,11 +48,11 @@
         try {
             const response = await fetch('/api/github-actions/status');
             const data = await response.json();
-            
+
             if (!data.success) {
                 throw new Error(data.error || 'Failed to fetch');
             }
-            
+
             renderActions(data.runs);
         } catch (error) {
             console.error('Error fetching GitHub Actions:', error);
@@ -69,7 +69,7 @@
 
     function renderActions(runs) {
         const container = document.getElementById('github-actions-container');
-        
+
         if (!runs || runs.length === 0) {
             container.innerHTML = '<div class="text-center py-6 text-slate-400">No workflow runs found</div>';
             return;
