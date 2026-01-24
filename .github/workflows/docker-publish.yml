@@ -63,31 +63,47 @@ jobs:
             # Přihlas se do GHCR
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # Najdi cestu k projektu
-            PROJECT_DIR=""
-            for dir in ~/devops-web /opt/devops-web /root/devops-web; do
-              if [ -d "$dir" ]; then
-                PROJECT_DIR="$dir"
-                break
-              fi
-            done
+            # Najdi docker-compose.yml pomocí běžícího containeru
+            COMPOSE_FILE=$(docker inspect devops-web-web-1 2>/dev/null | grep -oP '"com.docker.compose.project.working_dir": "\K[^"]+' || echo "")
             
-            if [ -z "$PROJECT_DIR" ]; then
-              echo "Error: Project directory not found!"
+            if [ -z "$COMPOSE_FILE" ]; then
+              # Fallback - hledej standardní místa
+              for dir in ~/devops-web /opt/devops-web /root/devops-web /home/*/devops-web; do
+                if [ -f "$dir/docker-compose.yml" ]; then
+                  COMPOSE_FILE="$dir"
+                  break
+                fi
+              done
+            fi
+            
+            if [ -z "$COMPOSE_FILE" ] || [ ! -d "$COMPOSE_FILE" ]; then
+              echo "Error: docker-compose.yml not found!"
+              echo "Current containers:"
+              docker ps
               exit 1
             fi
             
-            cd "$PROJECT_DIR"
-            echo "Working in: $PROJECT_DIR"
+            cd "$COMPOSE_FILE"
+            echo "Working in: $COMPOSE_FILE"
+            
+            # Backup stávajícího docker-compose.yml
+            cp docker-compose.yml docker-compose.yml.backup
             
             # Stáhni nejnovější docker-compose.prod.yml z GitHubu
             curl -o docker-compose.prod.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
             
-            # Stáhni a restartuj s docker-compose
+            # Použij produkční compose
             docker-compose -f docker-compose.prod.yml pull
+            
+            # Zastav staré containery
+            docker-compose -f docker-compose.yml down || true
+            
+            # Spusť nové s force-recreate
             docker-compose -f docker-compose.prod.yml up -d --force-recreate
             
-            # Vyčisti staré images
+            # Vyčisti staré images a samostatný devops-web container pokud existuje
+            docker stop devops-web 2>/dev/null || true
+            docker rm devops-web 2>/dev/null || true
             docker image prune -af
             
             echo "✅ Deployment completed!"
