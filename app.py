@@ -180,6 +180,15 @@ translations = {
         'services': 'Služby',
         'about': 'O mně',
         'contact': 'Kontakt',
+        'articles': 'Články',
+        'articles_subtitle': 'Blog & Publikace',
+        'articles_intro': 'Sdílím své praktické zkušenosti s Kubernetes, DevOps a cloud-native technologiemi.',
+        'czech': 'Česky',
+        'english': 'Anglicky',
+        'read_on_linkedin': 'Číst na LinkedIn',
+        'more_articles_coming': 'Další články už brzy',
+        'follow_linkedin': 'Sledujte mě na LinkedIn, abyste nepropásli nové články.',
+        'follow_on_linkedin': 'Sledovat na LinkedIn',
         'cka': 'Certified Kubernetes Administrator (CKA)',
         'hero_line1': 'Buduji stabilní',
         'hero_highlight': 'Cloud-Native',
@@ -264,6 +273,15 @@ translations = {
         'login': 'Sign in',
         'about': 'About',
         'contact': 'Contact',
+        'articles': 'Articles',
+        'articles_subtitle': 'Blog & Publications',
+        'articles_intro': 'I share my practical experience with Kubernetes, DevOps and cloud-native technologies.',
+        'czech': 'Czech',
+        'english': 'English',
+        'read_on_linkedin': 'Read on LinkedIn',
+        'more_articles_coming': 'More articles coming soon',
+        'follow_linkedin': 'Follow me on LinkedIn to stay updated with new articles.',
+        'follow_on_linkedin': 'Follow on LinkedIn',
         'cka': 'Certified Kubernetes Administrator (CKA)',
         'hero_line1': 'I build reliable',
         'hero_highlight': 'Cloud-Native',
@@ -445,6 +463,18 @@ def about():
         "deploy_time": datetime.datetime.utcnow().isoformat()
     }
     return render_template('about.html', info=data)
+
+
+@app.route('/articles')
+def articles():
+    data = {
+        "os": platform.system(),
+        "release": platform.release(),
+        "status": "Healthy",
+        "containerized": os.path.exists('/.dockerenv'),
+        "deploy_time": datetime.datetime.utcnow().isoformat()
+    }
+    return render_template('articles.html', info=data)
 
 
 @app.route('/deploy')

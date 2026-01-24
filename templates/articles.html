@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tr('articles') }} — Tomáš Jartymyk | DevOps & CKA Engineer</title>
+    <meta name="description" content="Články o Kubernetes, DevOps a cloud-native technologiích od Tomáše Jartymyka.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.02);
+            }
+        }
+
+        .status-dot {
+            animation: pulse-soft 2s infinite;
+        }
+
+        .article-card {
+            transition: all 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-[#0f172a] text-slate-200 font-sans">
+
+    {% include '_nav.html' %}
+
+    <section class="pt-40 pb-20 px-6">
+        <div class="max-w-5xl mx-auto">
+            <!-- Záhlaví -->
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-sm font-bold mb-8 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                    <i class="fa-solid fa-newspaper"></i>
+                    <span>{{ tr('articles_subtitle') }}</span>
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
+                    {{ tr('articles') }}
+                </h1>
+
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                    {{ tr('articles_intro') }}
+                </p>
+            </div>
+
+            <!-- Seznam článků -->
+            <div class="space-y-6">
+                <!-- Článek 1 -->
+                <article
+                    class="article-card bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8 hover:border-blue-500/50">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/30">
+                                    <i class="fa-solid fa-flag"></i>
+                                    {{ tr('czech') }}
+                                </span>
+                                <span class="text-sm text-slate-500 font-mono">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    2024
+                                </span>
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition">
+                                Od kódu k produkci: Jak jsem nasadil Python aplikaci na Kubernetes
+                            </h2>
+
+                            <p class="text-slate-400 mb-4 leading-relaxed">
+                                Kompletní průvodce nasazením Python Flask aplikace na Kubernetes cluster. Od Dockeru
+                                přes Helm chart až po monitoring s Prometheus a Grafana.
+                            </p>
+
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Kubernetes</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Python</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Docker</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Helm</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">CI/CD</span>
+                            </div>
+
+                            <a href="https://www.linkedin.com/pulse/od-k%C3%B3du-k-produkci-jak-jsem-nasadili-python-aplikaci-na-jartymyk-jj3uf/"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition group">
+                                {{ tr('read_on_linkedin') }}
+                                <i
+                                    class="fa-solid fa-arrow-up-right-from-square text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                            </a>
+                        </div>
+
+                        <div class="md:w-32 flex items-center justify-center">
+                            <div
+                                class="w-20 h-20 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/30">
+                                <i class="fa-brands fa-linkedin text-4xl text-blue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Článek 2 -->
+                <article
+                    class="article-card bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8 hover:border-blue-500/50">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold border border-green-500/30">
+                                    <i class="fa-solid fa-flag"></i>
+                                    {{ tr('english') }}
+                                </span>
+                                <span class="text-sm text-slate-500 font-mono">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    2024
+                                </span>
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition">
+                                How to Start Using LoadBalancer Service in Your On-Prem Kubernetes Cluster
+                            </h2>
+
+                            <p class="text-slate-400 mb-4 leading-relaxed">
+                                Practical guide to implementing LoadBalancer services in on-premises Kubernetes clusters
+                                using MetalLB. Learn how to expose services without cloud providers.
+                            </p>
+
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Kubernetes</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">MetalLB</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">LoadBalancer</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">On-Prem</span>
+                                <span
+                                    class="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-xs">Networking</span>
+                            </div>
+
+                            <a href="https://www.linkedin.com/pulse/how-you-start-use-loadbalancer-service-your-on-prem-cluster-jartymyk-bbcre/"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition group">
+                                {{ tr('read_on_linkedin') }}
+                                <i
+                                    class="fa-solid fa-arrow-up-right-from-square text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                            </a>
+                        </div>
+
+                        <div class="md:w-32 flex items-center justify-center">
+                            <div
+                                class="w-20 h-20 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/30">
+                                <i class="fa-brands fa-linkedin text-4xl text-blue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="mt-16 text-center">
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-white mb-3">
+                        {{ tr('more_articles_coming') }}
+                    </h3>
+                    <p class="text-slate-400 mb-6">
+                        {{ tr('follow_linkedin') }}
+                    </p>
+                    <a href="https://www.linkedin.com/in/tomas-jartymyk/" target="_blank"
+                        class="inline-flex items-center gap-2 bg-[#0077b5] hover:bg-[#005c8d] px-6 py-3 rounded-xl font-bold transition shadow-lg text-white">
+                        <i class="fa-brands fa-linkedin text-xl"></i>
+                        {{ tr('follow_on_linkedin') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div
+                class="flex flex-col md:flex-row justify-center items-center gap-4 text-sm font-mono text-slate-500 mb-6">
+                <span class="flex items-center gap-2 text-green-400">
+                    <span class="w-2 h-2 bg-green-500 rounded-full status-dot"></span>
+                    {{ tr('system_healthy') }}
+                </span>
+                <span class="hidden md:inline">|</span>
+                <span>OS: {{ info.os }}</span>
+                <span class="hidden md:inline">|</span>
+                <span>Dockerized: {{ "YES" if info.containerized else "NO" }}</span>
+                <span class="hidden md:inline">|</span>
+                <span>Time: {{ info.deploy_time }}</span>
+            </div>
+            <p class="text-slate-600 text-xs">&copy; 2026 Tomáš Jartymyk. Build with ❤️ and Python.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

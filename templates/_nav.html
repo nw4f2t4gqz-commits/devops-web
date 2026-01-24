@@ -12,6 +12,9 @@
             <a href="/about"
                 class="hover:text-blue-400 transition {% if current_path.startswith('/about') %}font-bold text-blue-300{% endif %}"
                 {% if current_path.startswith('/about') %}aria-current="page" {% endif %}>{{ tr('about') }}</a>
+            <a href="/articles"
+                class="hover:text-blue-400 transition {% if current_path.startswith('/articles') %}font-bold text-blue-300{% endif %}"
+                {% if current_path.startswith('/articles') %}aria-current="page" {% endif %}>{{ tr('articles') }}</a>
             <a href="/deploy"
                 class="hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}"
                 {% if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
@@ -54,6 +57,9 @@
         <a href="/about"
             class="block hover:text-blue-400 transition {% if current_path.startswith('/about') %}font-bold text-blue-300{% endif %}">{%
             if current_path.startswith('/about') %}aria-current="page" {% endif %}>{{ tr('about') }}</a>
+        <a href="/articles"
+            class="block hover:text-blue-400 transition {% if current_path.startswith('/articles') %}font-bold text-blue-300{% endif %}">{%
+            if current_path.startswith('/articles') %}aria-current="page" {% endif %}>{{ tr('articles') }}</a>
         <a href="/deploy"
             class="block hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}">{%
             if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
