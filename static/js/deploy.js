@@ -1,3 +1,124 @@
+// GitHub Actions Live Status
+(function() {
+    let refreshInterval;
+    
+    function getStatusIcon(status, conclusion) {
+        if (status === 'in_progress' || status === 'queued') {
+            return `<svg class="animate-spin h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>`;
+        }
+        if (conclusion === 'success') {
+            return `<svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>`;
+        }
+        if (conclusion === 'failure') {
+            return `<svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>`;
+        }
+        return `<svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"></path>
+        </svg>`;
+    }
+
+    function getStatusBadge(status, conclusion) {
+        if (status === 'in_progress') return '<span class="px-2 py-1 bg-yellow-500/20 text-yellow-300 text-xs rounded-full border border-yellow-500/30">⏳ In Progress</span>';
+        if (status === 'queued') return '<span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full border border-blue-500/30">⏱️ Queued</span>';
+        if (conclusion === 'success') return '<span class="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded-full border border-green-500/30">✓ Success</span>';
+        if (conclusion === 'failure') return '<span class="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded-full border border-red-500/30">✗ Failed</span>';
+        if (conclusion === 'cancelled') return '<span class="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full border border-gray-500/30">⊘ Cancelled</span>';
+        return '<span class="px-2 py-1 bg-slate-600/20 text-slate-300 text-xs rounded-full border border-slate-600/30">○ Unknown</span>';
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+    }
+
+    async function fetchGitHubActions() {
+        try {
+            const response = await fetch('/api/github-actions/status');
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to fetch');
+            }
+            
+            renderActions(data.runs);
+        } catch (error) {
+            console.error('Error fetching GitHub Actions:', error);
+            document.getElementById('github-actions-container').innerHTML = `
+                <div class="text-center py-6 text-red-400">
+                    <svg class="h-8 w-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Error loading GitHub Actions: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    function renderActions(runs) {
+        const container = document.getElementById('github-actions-container');
+        
+        if (!runs || runs.length === 0) {
+            container.innerHTML = '<div class="text-center py-6 text-slate-400">No workflow runs found</div>';
+            return;
+        }
+
+        container.innerHTML = runs.map(run => `
+            <div class="p-4 bg-slate-900/50 border border-slate-700 rounded-lg hover:border-blue-500/30 transition">
+                <div class="flex items-start gap-3">
+                    <div class="mt-1">${getStatusIcon(run.status, run.conclusion)}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <a href="${run.html_url}" target="_blank" class="font-semibold text-slate-100 hover:text-blue-400 transition">
+                                    ${run.name} #${run.id.toString().slice(-4)}
+                                </a>
+                                <div class="text-xs text-slate-400 mt-1">
+                                    ${run.head_commit ? run.head_commit.message : 'No commit message'}
+                                </div>
+                            </div>
+                            ${getStatusBadge(run.status, run.conclusion)}
+                        </div>
+                        <div class="flex items-center gap-3 mt-2 text-xs text-slate-500">
+                            <span>${run.head_commit ? run.head_commit.author : 'Unknown'}</span>
+                            <span>•</span>
+                            <span>${formatDate(run.updated_at)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Initial fetch
+    fetchGitHubActions();
+
+    // Refresh button
+    document.getElementById('refresh-actions').addEventListener('click', () => {
+        fetchGitHubActions();
+    });
+
+    // Auto-refresh every 30 seconds
+    refreshInterval = setInterval(fetchGitHubActions, 30000);
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        clearInterval(refreshInterval);
+    });
+})();
+
 // Lightweight deployment simulator using anime.js
 // Controls: Play, Pause, Speed
 

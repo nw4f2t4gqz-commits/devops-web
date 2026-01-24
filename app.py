@@ -538,6 +538,92 @@ def deploy_demo():
     return render_template('deploy.html', info=data, artifacts=artifacts, logs=logs_tail)
 
 
+@app.route('/api/github-actions/status')
+def github_actions_status():
+    """API endpoint that fetches real GitHub Actions workflow runs status."""
+    try:
+        # GitHub API settings
+        repo_owner = "nw4f2t4gqz-commits"
+        repo_name = "devops-web"
+        workflow_name = "docker-publish.yml"
+        
+        # GitHub API URL
+        api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_name}/runs"
+        
+        # Headers (no token needed for public repos, but recommended for rate limits)
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "DevOps-Web-App"
+        }
+        
+        # Optional: Add GitHub token if available (for higher rate limits)
+        github_token = os.environ.get('GITHUB_TOKEN') or os.environ.get('GHCR_PAT')
+        if github_token:
+            headers["Authorization"] = f"Bearer {github_token}"
+        
+        # Fetch workflow runs (last 5)
+        if _requests:
+            response = _requests.get(api_url, headers=headers, params={"per_page": 5}, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                runs = []
+                for run in data.get('workflow_runs', []):
+                    runs.append({
+                        'id': run['id'],
+                        'name': run['name'],
+                        'status': run['status'],  # queued, in_progress, completed
+                        'conclusion': run['conclusion'],  # success, failure, cancelled, skipped
+                        'created_at': run['created_at'],
+                        'updated_at': run['updated_at'],
+                        'html_url': run['html_url'],
+                        'head_commit': {
+                            'message': run['head_commit']['message'],
+                            'author': run['head_commit']['author']['name']
+                        } if run.get('head_commit') else None
+                    })
+                return jsonify({
+                    'success': True,
+                    'runs': runs,
+                    'total_count': data.get('total_count', 0)
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': f'GitHub API returned status {response.status_code}'
+                }), 500
+        else:
+            # Fallback using urllib
+            req = _urllib.Request(api_url + "?per_page=5", headers=headers)
+            with _urllib.urlopen(req, timeout=5) as response:
+                import json
+                data = json.loads(response.read().decode())
+                runs = []
+                for run in data.get('workflow_runs', []):
+                    runs.append({
+                        'id': run['id'],
+                        'name': run['name'],
+                        'status': run['status'],
+                        'conclusion': run['conclusion'],
+                        'created_at': run['created_at'],
+                        'updated_at': run['updated_at'],
+                        'html_url': run['html_url'],
+                        'head_commit': {
+                            'message': run['head_commit']['message'],
+                            'author': run['head_commit']['author']['name']
+                        } if run.get('head_commit') else None
+                    })
+                return jsonify({
+                    'success': True,
+                    'runs': runs,
+                    'total_count': data.get('total_count', 0)
+                })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @app.route('/contact', methods=['GET', 'POST'])
 @limiter.limit("10 per hour")
 def contact():

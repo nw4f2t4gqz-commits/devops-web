@@ -89,11 +89,22 @@ jobs:
             # Stáhni nejnovější docker-compose.prod.yml z GitHubu
             curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
             
+            # Detekuj docker-compose vs docker compose (plugin)
+            if command -v docker-compose &> /dev/null; then
+              COMPOSE_CMD="docker-compose"
+            elif docker compose version &> /dev/null; then
+              COMPOSE_CMD="docker compose"
+            else
+              echo "Error: Neither docker-compose nor docker compose found!"
+              exit 1
+            fi
+            echo "Using: $COMPOSE_CMD"
+            
             # Pull nového image
-            docker-compose pull
+            $COMPOSE_CMD pull
             
             # Restart s force-recreate (zachová network pro nginx-proxy)
-            docker-compose up -d --force-recreate
+            $COMPOSE_CMD up -d --force-recreate
             
             # Vyčisti staré images
             docker image prune -af
