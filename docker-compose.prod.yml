@@ -1,5 +1,19 @@
 # Production docker-compose - používá image z GHCR místo lokálního buildu
 services:
+  nginx-proxy:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: devops-web-nginx-proxy-1
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - ./nginx-proxy/data:/data
+      - ./nginx-proxy/letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+    networks:
+      - default
+
   web:
     image: ghcr.io/nw4f2t4gqz-commits/devops-web:latest
     container_name: devops-web-web-1
@@ -23,11 +37,12 @@ services:
     restart: unless-stopped
     networks:
       - default
+    depends_on:
+      - nginx-proxy
 
 networks:
   default:
     name: devops-web_default
-    external: true
 
 volumes:
   data:
