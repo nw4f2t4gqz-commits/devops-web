@@ -103,8 +103,14 @@ jobs:
             # Pull nového image
             $COMPOSE_CMD pull
             
-            # Restart s force-recreate (zachová network pro nginx-proxy)
-            $COMPOSE_CMD up -d --force-recreate
+            # Zastav a odstraň všechny staré containery (vyřeší ContainerConfig error)
+            $COMPOSE_CMD down --remove-orphans || true
+            
+            # Vyčisti dangling containery
+            docker container prune -f || true
+            
+            # Spusť nový container (clean start bez force-recreate)
+            $COMPOSE_CMD up -d
             
             # Vyčisti staré images
             docker image prune -af
