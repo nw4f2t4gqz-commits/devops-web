@@ -48,21 +48,22 @@
     </div>
 </nav>
 <!-- Mobile collapsible menu: hidden on md+ -->
-<div id="mobile-menu" class="md:hidden hidden bg-[#0f172a]/90 border-b border-slate-800">
+<div id="mobile-menu"
+    class="md:hidden hidden bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 fixed w-full top-[73px] z-40">
     <div class="px-6 py-4 space-y-3">
         <a href="/"
-            class="block hover:text-blue-400 transition {% if current_path == '/' %}font-bold text-blue-300{% endif %}">{%
-            if current_path=='/' %}aria-current="page" {% endif %}>{{ tr('home') }}</a>
+            class="block hover:text-blue-400 transition {% if current_path == '/' %}font-bold text-blue-300{% endif %}"
+            {% if current_path=='/' %}aria-current="page" {% endif %}>{{ tr('home') }}</a>
         <a href="/#services" class="block hover:text-blue-400 transition">{{ tr('services') }}</a>
         <a href="/about"
-            class="block hover:text-blue-400 transition {% if current_path.startswith('/about') %}font-bold text-blue-300{% endif %}">{%
-            if current_path.startswith('/about') %}aria-current="page" {% endif %}>{{ tr('about') }}</a>
+            class="block hover:text-blue-400 transition {% if current_path.startswith('/about') %}font-bold text-blue-300{% endif %}"
+            {% if current_path.startswith('/about') %}aria-current="page" {% endif %}>{{ tr('about') }}</a>
         <a href="/articles"
-            class="block hover:text-blue-400 transition {% if current_path.startswith('/articles') %}font-bold text-blue-300{% endif %}">{%
-            if current_path.startswith('/articles') %}aria-current="page" {% endif %}>{{ tr('articles') }}</a>
+            class="block hover:text-blue-400 transition {% if current_path.startswith('/articles') %}font-bold text-blue-300{% endif %}"
+            {% if current_path.startswith('/articles') %}aria-current="page" {% endif %}>{{ tr('articles') }}</a>
         <a href="/deploy"
-            class="block hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}">{%
-            if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
+            class="block hover:text-blue-400 transition {% if current_path == '/deploy' %}font-bold text-blue-300{% endif %}"
+            {% if current_path=='/deploy' %}aria-current="page" {% endif %}>{{ tr('deploy') }}</a>
         <a href="/contact"
             class="block bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold transition text-white">{{
             tr('contact') }}</a>
