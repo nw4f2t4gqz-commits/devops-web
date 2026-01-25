@@ -32,7 +32,7 @@ if [ ! -d "$HELM_LOCAL" ]; then
     echo "❌ Helm chart not found at $HELM_LOCAL"
     echo "Creating chart from ./helm..."
     helm create "$HELM_LOCAL"
-    rm -rf "$HELM_LOCAL/templates/tests" "$HELM_LOCAL/charts"
+    rm -rf "$HELM_LOCAL/templates/tests" "$HELM_LOCAL/charts" "$HELM_LOCAL/templates/NOTES.txt"
     cp -R ./helm/templates/* "$HELM_LOCAL/templates/"
     cp ./helm/values*.yaml "$HELM_LOCAL/"
     cat > "$HELM_LOCAL/Chart.yaml" << 'EOF'
