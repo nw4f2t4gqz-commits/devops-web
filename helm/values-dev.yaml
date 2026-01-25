@@ -6,6 +6,8 @@ image:
   pullPolicy: IfNotPresent
   tag: "latest"
 
+imagePullSecrets: []
+
 ingress:
   enabled: false
   className: "nginx"
