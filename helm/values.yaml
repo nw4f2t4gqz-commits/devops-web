@@ -2,9 +2,9 @@
 replicaCount: 2
 
 image:
-  repository: your-registry/devops-web
+  repository: <+artifact.imagePath>
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: <+artifact.tag>
 
 imagePullSecrets:
   - name: github-ghcr
