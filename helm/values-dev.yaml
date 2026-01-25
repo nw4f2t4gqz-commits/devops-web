@@ -1,0 +1,49 @@
+# Development environment values (optimized for Minikube)
+replicaCount: 1
+
+image:
+  repository: ghcr.io/nw4f2t4gqz-commits/devops-web
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: devops-web.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+persistence:
+  enabled: true
+  storageClass: "standard"  # Minikube default storage class
+  accessMode: ReadWriteOnce
+  size: 500Mi
+
+autoscaling:
+  enabled: false
+
+secrets:
+  secretKey: "dev-secret-key-change-me"
+  adminUser: "admin"
+  adminPass: "admin123"
+  smtpUser: "dev@example.com"
+  smtpPass: "dev-password"
+  emailTo: "dev@example.com"
+
+env:
+  SMTP_HOST: smtp.office365.com
+  SMTP_PORT: "587"
+  GUNICORN_WORKERS: "1"

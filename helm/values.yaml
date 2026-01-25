@@ -1,0 +1,122 @@
+# Default values for devops-web
+replicaCount: 2
+
+image:
+  repository: your-registry/devops-web
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5001
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: devops.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: devops-web-tls
+      hosts:
+        - devops.example.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  mountPath: /app/data
+
+env:
+  # Application config
+  SECRET_KEY: ""  # Will be set from secret
+  ADMIN_USER: ""  # Will be set from secret
+  ADMIN_PASS: ""  # Will be set from secret
+  
+  # SMTP config
+  SMTP_HOST: smtp.office365.com
+  SMTP_PORT: "587"
+  SMTP_USER: ""  # Will be set from secret
+  SMTP_PASS: ""  # Will be set from secret
+  EMAIL_TO: ""    # Will be set from secret
+  
+  # Gunicorn
+  GUNICORN_WORKERS: "2"
+
+# Secrets - these should be stored in sealed-secrets or external secrets operator
+secrets:
+  secretKey: "change-me-to-a-secure-random-value"
+  adminUser: "admin"
+  adminPass: "change-me"
+  smtpUser: "your-smtp-user@example.com"
+  smtpPass: "your-smtp-password"
+  emailTo: "you@example.com"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Liveness and readiness probes
+livenessProbe:
+  httpGet:
+    path: /
+    port: 5001
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 5001
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
